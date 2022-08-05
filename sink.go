@@ -1,18 +1,19 @@
 package panyl_zap
 
+import "github.com/RangelReale/panyl"
+
 type Sink struct {
-	c chan<- string
+	job *panyl.Job
 }
 
-func NewSink(c chan<- string) *Sink {
+func NewSink(job *panyl.Job) *Sink {
 	return &Sink{
-		c: c,
+		job: job,
 	}
 }
 
 func (s *Sink) Write(p []byte) (n int, err error) {
-	s.c <- string(p)
-	return len(p), nil
+	return len(p), s.job.ProcessLine(string(p))
 }
 
 func (s *Sink) Sync() error {
@@ -20,5 +21,5 @@ func (s *Sink) Sync() error {
 }
 
 func (s *Sink) Close() error {
-	return nil
+	return s.job.Finish()
 }

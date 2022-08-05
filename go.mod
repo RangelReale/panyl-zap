@@ -3,7 +3,7 @@ module github.com/RangelReale/panyl-zap
 go 1.17
 
 require (
-	github.com/RangelReale/panyl v0.6.7
+	github.com/RangelReale/panyl v0.6.8
 	go.uber.org/zap v1.21.0
 )
 

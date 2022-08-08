@@ -12,23 +12,23 @@ import (
 )
 
 func main() {
-	encoderConfig := zap.NewDevelopmentEncoderConfig()
-	
-	processor := panyl.NewProcessor(
-		panyl.WithPlugins(
-			&structure.JSON{},
-			&panylzap.ZapJSON{
-				EncoderConfig: encoderConfig,
-			},
-		),
-	)
+    encoderConfig := zap.NewDevelopmentEncoderConfig()
+    
+    processor := panyl.NewProcessor(
+        panyl.WithPlugins(
+            &structure.JSON{},
+            &panylzap.ZapJSON{
+                EncoderConfig: encoderConfig,
+            },
+        ),
+    )
     output := output.NewAnsiOutput(true)
     job := panyl.NewJob(processor, output, panyl.WithIncludeSource(true))
 
     sink := panylzap.NewSink(job)
     encoder := zapcore.NewJSONEncoder(encoderConfig)
     core := zapcore.NewCore(encoder, zapcore.Lock(sink),  zapcore.DebugLevel)
-}	
+}
 ```
 
 ## Author

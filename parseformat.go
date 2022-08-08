@@ -1,6 +1,7 @@
 package panylzap
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/RangelReale/panyl"
@@ -61,6 +62,16 @@ func (c ZapJSON) ParseFormat(result *panyl.Process) (bool, error) {
 					result.Metadata[panyl.Metadata_Level] = panyl.MetadataLevel_DEBUG
 				}
 			}
+
+			// if level is error/fatal, and have an "error" key, show it as the error message
+			if result.Metadata.HasValue(panyl.Metadata_Message) &&
+				result.Metadata.HasValue(panyl.Metadata_Level) &&
+				(result.Metadata[panyl.Metadata_Level] == panyl.MetadataLevel_ERROR || result.Metadata[panyl.Metadata_Level] == panyl.MetadataLevel_FATAL) &&
+				result.Data.HasValue("error") {
+				result.Metadata[panyl.Metadata_Message] = fmt.Sprintf("%s [error: %s]",
+					result.Metadata[panyl.Metadata_Message], result.Data.StringValue("error"))
+			}
+
 			return true, nil
 		}
 	}

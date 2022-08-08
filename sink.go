@@ -1,15 +1,28 @@
-package panyl_zap
+package panylzap
 
-import "github.com/RangelReale/panyl"
+import (
+	"io"
+
+	"github.com/RangelReale/panyl"
+)
 
 type Sink struct {
-	job *panyl.Job
+	job    *panyl.Job
+	closer io.Closer
 }
 
-func NewSink(job *panyl.Job) *Sink {
-	return &Sink{
+type SinkOption func(*Sink)
+
+// NewSink creates a new zap sink using a panyl job
+// Must use "zapcore.Lock" to avoid sync issues
+func NewSink(job *panyl.Job, options ...SinkOption) *Sink {
+	ret := &Sink{
 		job: job,
 	}
+	for _, o := range options {
+		o(ret)
+	}
+	return ret
 }
 
 func (s *Sink) Write(p []byte) (n int, err error) {
@@ -21,5 +34,18 @@ func (s *Sink) Sync() error {
 }
 
 func (s *Sink) Close() error {
-	return s.job.Finish()
+	err := s.job.Finish()
+	if err != nil {
+		return err
+	}
+	if s.closer != nil {
+		return s.closer.Close()
+	}
+	return nil
+}
+
+func WithCloser(closer io.Closer) SinkOption {
+	return func(sink *Sink) {
+		sink.closer = closer
+	}
 }

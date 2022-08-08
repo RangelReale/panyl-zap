@@ -1,4 +1,4 @@
-package panyl_zap
+package panylzap
 
 import (
 	"time"
@@ -26,30 +26,28 @@ func (c ZapJSON) ParseFormat(result *panyl.Process) (bool, error) {
 	if result.Metadata.StringValue(panyl.Metadata_Structure) == panyl.MetadataStructure_JSON {
 		if (c.EncoderConfig.MessageKey == "" || result.Data.HasValue(c.EncoderConfig.MessageKey)) &&
 			(c.EncoderConfig.LevelKey == "" || result.Data.HasValue(c.EncoderConfig.LevelKey)) &&
-			(c.EncoderConfig.TimeKey == "" || result.Data.HasValue(c.EncoderConfig.TimeKey)) &&
-			(c.EncoderConfig.NameKey == "" || result.Data.HasValue(c.EncoderConfig.NameKey)) &&
-			(c.EncoderConfig.CallerKey == "" || result.Data.HasValue(c.EncoderConfig.CallerKey)) {
+			(c.EncoderConfig.TimeKey == "" || result.Data.HasValue(c.EncoderConfig.TimeKey)) {
 
 			result.Metadata[panyl.Metadata_Format] = ZapJSONFormat
 
-			if c.EncoderConfig.MessageKey != "" {
+			if c.EncoderConfig.MessageKey != "" && result.Data.HasValue(c.EncoderConfig.MessageKey) {
 				result.Metadata[panyl.Metadata_Message] = result.Data.StringValue(c.EncoderConfig.MessageKey)
 			}
 
-			if c.EncoderConfig.NameKey != "" {
+			if c.EncoderConfig.NameKey != "" && result.Data.HasValue(c.EncoderConfig.NameKey) {
 				result.Metadata[panyl.Metadata_Category] = result.Data.StringValue(c.EncoderConfig.NameKey)
-			} else if c.EncoderConfig.CallerKey != "" {
+			} else if c.EncoderConfig.CallerKey != "" && result.Data.HasValue(c.EncoderConfig.CallerKey) {
 				result.Metadata[panyl.Metadata_Category] = result.Data.StringValue(c.EncoderConfig.CallerKey)
 			}
 
-			if c.EncoderConfig.TimeKey != "" {
+			if c.EncoderConfig.TimeKey != "" && result.Data.HasValue(c.EncoderConfig.TimeKey) {
 				ts, err := time.Parse(zapTimestampFormat, result.Data.StringValue(c.EncoderConfig.TimeKey))
 				if err == nil {
 					result.Metadata[panyl.Metadata_Timestamp] = ts
 				}
 			}
 
-			if c.EncoderConfig.LevelKey != "" {
+			if c.EncoderConfig.LevelKey != "" && result.Data.HasValue(c.EncoderConfig.LevelKey) {
 				switch result.Data.StringValue(c.EncoderConfig.LevelKey) {
 				case "fatal", "FATAL", "panic", "PANIC", "dpanic", "DPANIC":
 					result.Metadata[panyl.Metadata_Level] = panyl.MetadataLevel_FATAL

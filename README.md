@@ -28,6 +28,8 @@ func main() {
     sink := panylzap.NewSink(job)
     encoder := zapcore.NewJSONEncoder(encoderConfig)
     core := zapcore.NewCore(encoder, zapcore.Lock(sink),  zapcore.DebugLevel)
+
+    logger := zap.New(core)
 }
 ```
 

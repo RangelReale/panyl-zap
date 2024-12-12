@@ -1,6 +1,6 @@
 module github.com/RangelReale/panyl-zap
 
-go 1.17
+go 1.23
 
 require (
 	github.com/RangelReale/panyl v0.6.8

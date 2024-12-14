@@ -1,6 +1,7 @@
 package panylzap
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -22,7 +23,7 @@ var (
 	zapTimestampFormat = "2006-01-02T15:04:05.000Z07:00"
 )
 
-func (c ZapJSON) ParseFormat(result *panyl.Process) (bool, error) {
+func (c ZapJSON) ParseFormat(ctx context.Context, result *panyl.Process) (bool, error) {
 	// only if json
 	if result.Metadata.StringValue(panyl.MetadataStructure) == panyl.MetadataStructureJSON {
 		if (c.EncoderConfig.MessageKey == "" || result.Data.HasValue(c.EncoderConfig.MessageKey)) &&
@@ -50,9 +51,7 @@ func (c ZapJSON) ParseFormat(result *panyl.Process) (bool, error) {
 
 			if c.EncoderConfig.LevelKey != "" && result.Data.HasValue(c.EncoderConfig.LevelKey) {
 				switch result.Data.StringValue(c.EncoderConfig.LevelKey) {
-				case "fatal", "FATAL", "panic", "PANIC", "dpanic", "DPANIC":
-					result.Metadata[panyl.MetadataLevel] = panyl.MetadataLevel_FATAL
-				case "error", "ERROR":
+				case "error", "ERROR", "fatal", "FATAL", "panic", "PANIC", "dpanic", "DPANIC":
 					result.Metadata[panyl.MetadataLevel] = panyl.MetadataLevelERROR
 				case "warn", "WARN":
 					result.Metadata[panyl.MetadataLevel] = panyl.MetadataLevelWARNING
@@ -63,10 +62,10 @@ func (c ZapJSON) ParseFormat(result *panyl.Process) (bool, error) {
 				}
 			}
 
-			// if level is error/fatal, and have an "error" key, show it as the error message
+			// if level is error, and have an "error" key, show it as the error message
 			if result.Metadata.HasValue(panyl.MetadataMessage) &&
 				result.Metadata.HasValue(panyl.MetadataLevel) &&
-				(result.Metadata[panyl.MetadataLevel] == panyl.MetadataLevelERROR || result.Metadata[panyl.MetadataLevel] == panyl.MetadataLevel_FATAL) &&
+				(result.Metadata[panyl.MetadataLevel] == panyl.MetadataLevelERROR) &&
 				result.Data.HasValue("error") {
 				result.Metadata[panyl.MetadataMessage] = fmt.Sprintf("%s [error: %s]",
 					result.Metadata[panyl.MetadataMessage], result.Data.StringValue("error"))

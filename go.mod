@@ -1,9 +1,9 @@
-module github.com/RangelReale/panyl-zap
+module github.com/RangelReale/panyl-zap/v2
 
 go 1.23
 
 require (
-	github.com/RangelReale/panyl v0.9.0
+	github.com/RangelReale/panyl/v2 v2.0.0
 	go.uber.org/zap v1.27.0
 )
 

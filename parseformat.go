@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/RangelReale/panyl"
+	"github.com/RangelReale/panyl/v2"
 	"go.uber.org/zap/zapcore"
 )
 

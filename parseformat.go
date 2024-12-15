@@ -9,8 +9,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var _ panyl.PluginParseFormat = (*ZapJSON)(nil)
-
 const ZapJSONFormat = "zap_json"
 
 type ZapJSON struct {
@@ -23,34 +21,36 @@ var (
 	zapTimestampFormat = "2006-01-02T15:04:05.000Z07:00"
 )
 
-func (c ZapJSON) ParseFormat(ctx context.Context, item *panyl.Item) (bool, error) {
+var _ panyl.PluginParseFormat = ZapJSON{}
+
+func (m ZapJSON) ParseFormat(ctx context.Context, item *panyl.Item) (bool, error) {
 	// only if json
 	if item.Metadata.StringValue(panyl.MetadataStructure) == panyl.MetadataStructureJSON {
-		if (c.EncoderConfig.MessageKey == "" || item.Data.HasValue(c.EncoderConfig.MessageKey)) &&
-			(c.EncoderConfig.LevelKey == "" || item.Data.HasValue(c.EncoderConfig.LevelKey)) &&
-			(c.EncoderConfig.TimeKey == "" || item.Data.HasValue(c.EncoderConfig.TimeKey)) {
+		if (m.EncoderConfig.MessageKey == "" || item.Data.HasValue(m.EncoderConfig.MessageKey)) &&
+			(m.EncoderConfig.LevelKey == "" || item.Data.HasValue(m.EncoderConfig.LevelKey)) &&
+			(m.EncoderConfig.TimeKey == "" || item.Data.HasValue(m.EncoderConfig.TimeKey)) {
 
 			item.Metadata[panyl.MetadataFormat] = ZapJSONFormat
 
-			if c.EncoderConfig.MessageKey != "" && item.Data.HasValue(c.EncoderConfig.MessageKey) {
-				item.Metadata[panyl.MetadataMessage] = item.Data.StringValue(c.EncoderConfig.MessageKey)
+			if m.EncoderConfig.MessageKey != "" && item.Data.HasValue(m.EncoderConfig.MessageKey) {
+				item.Metadata[panyl.MetadataMessage] = item.Data.StringValue(m.EncoderConfig.MessageKey)
 			}
 
-			if c.EncoderConfig.NameKey != "" && item.Data.HasValue(c.EncoderConfig.NameKey) {
-				item.Metadata[panyl.MetadataCategory] = item.Data.StringValue(c.EncoderConfig.NameKey)
-			} else if c.EncoderConfig.CallerKey != "" && item.Data.HasValue(c.EncoderConfig.CallerKey) {
-				item.Metadata[panyl.MetadataCategory] = item.Data.StringValue(c.EncoderConfig.CallerKey)
+			if m.EncoderConfig.NameKey != "" && item.Data.HasValue(m.EncoderConfig.NameKey) {
+				item.Metadata[panyl.MetadataCategory] = item.Data.StringValue(m.EncoderConfig.NameKey)
+			} else if m.EncoderConfig.CallerKey != "" && item.Data.HasValue(m.EncoderConfig.CallerKey) {
+				item.Metadata[panyl.MetadataCategory] = item.Data.StringValue(m.EncoderConfig.CallerKey)
 			}
 
-			if c.EncoderConfig.TimeKey != "" && item.Data.HasValue(c.EncoderConfig.TimeKey) {
-				ts, err := time.Parse(zapTimestampFormat, item.Data.StringValue(c.EncoderConfig.TimeKey))
+			if m.EncoderConfig.TimeKey != "" && item.Data.HasValue(m.EncoderConfig.TimeKey) {
+				ts, err := time.Parse(zapTimestampFormat, item.Data.StringValue(m.EncoderConfig.TimeKey))
 				if err == nil {
 					item.Metadata[panyl.MetadataTimestamp] = ts
 				}
 			}
 
-			if c.EncoderConfig.LevelKey != "" && item.Data.HasValue(c.EncoderConfig.LevelKey) {
-				switch item.Data.StringValue(c.EncoderConfig.LevelKey) {
+			if m.EncoderConfig.LevelKey != "" && item.Data.HasValue(m.EncoderConfig.LevelKey) {
+				switch item.Data.StringValue(m.EncoderConfig.LevelKey) {
 				case "error", "ERROR", "fatal", "FATAL", "panic", "PANIC", "dpanic", "DPANIC":
 					item.Metadata[panyl.MetadataLevel] = panyl.MetadataLevelERROR
 				case "warn", "WARN":
@@ -77,4 +77,4 @@ func (c ZapJSON) ParseFormat(ctx context.Context, item *panyl.Item) (bool, error
 	return false, nil
 }
 
-func (c ZapJSON) IsPanylPlugin() {}
+func (m ZapJSON) IsPanylPlugin() {}

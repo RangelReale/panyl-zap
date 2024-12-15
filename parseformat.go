@@ -17,11 +17,11 @@ type ZapJSON struct {
 
 // example: {"level":"debug","timestamp":"2022-08-05T18:38:26.088Z","caller":"aws/client.go:10","message":"client response"}
 
+var _ panyl.PluginParseFormat = ZapJSON{}
+
 var (
 	zapTimestampFormat = "2006-01-02T15:04:05.000Z07:00"
 )
-
-var _ panyl.PluginParseFormat = ZapJSON{}
 
 func (m ZapJSON) ParseFormat(ctx context.Context, item *panyl.Item) (bool, error) {
 	// only if json

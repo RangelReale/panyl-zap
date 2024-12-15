@@ -2,11 +2,11 @@
 
 ```go
 import (
-    "github.com/RangelReale/panyl"
-    "github.com/RangelReale/panyl-zap"
-    "github.com/RangelReale/panyl/plugins/structure"
-    panylzap "github.com/RangelReale/panyl-zap"
-    "github.com/RangelReale/panyl-plugins-ansi/output"
+    "github.com/RangelReale/panyl/v2"
+    "github.com/RangelReale/panyl-zap/v2"
+    "github.com/RangelReale/panyl/v2/plugins/structure"
+    panylzap "github.com/RangelReale/panyl-zap/v2"
+    "github.com/RangelReale/panyl-plugins-ansi/v2/output"
     "go.uber.org/zap"
     "go.uber.org/zap/zapcore"
 )
